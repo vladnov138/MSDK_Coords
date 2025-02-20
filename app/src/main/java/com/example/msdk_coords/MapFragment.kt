@@ -1,28 +1,47 @@
 package com.example.msdk_coords
 
+import android.content.res.Resources.Theme
+import android.graphics.Color
+import android.graphics.drawable.VectorDrawable
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.ViewCompat
 import com.example.msdk_coords.databinding.FragmentMapBinding
 import com.yandex.mapkit.MapKitFactory
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
+import com.yandex.mapkit.map.IconStyle
 import com.yandex.mapkit.map.InputListener
+import com.yandex.mapkit.map.MapObjectTapListener
 import com.yandex.mapkit.map.PlacemarkMapObject
+import com.yandex.mapkit.map.TextStyle
 import com.yandex.mapkit.mapview.MapView
 import com.yandex.runtime.image.ImageProvider
 
 class MapFragment : Fragment() {
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
+
     private lateinit var mapView: MapView
+
     private var isRouteCreationMode = false
     private val dronePoints: MutableList<PlacemarkMapObject> = mutableListOf()
+
     private var inputListener: InputListener? = null
+//    private val placemarkTapListener = MapObjectTapListener { _, point ->
+//        Toast.makeText(
+//            this@MainActivity,
+//            "Tapped the point (${point.longitude}, ${point.latitude})",
+//            Toast.LENGTH_SHORT
+//        ).show()
+//        true
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,16 +88,19 @@ class MapFragment : Fragment() {
 
         inputListener = object : InputListener {
             override fun onMapTap(map: com.yandex.mapkit.map.Map, point: Point) {
-                Log.d("Map", "${isRouteCreationMode}")
                 if (!isRouteCreationMode) return
-
-//                updateRouteDisplay()
-
-                // Добавляем нумерованную метку
                 val placemark = map.mapObjects.addPlacemark().apply {
                     geometry = point
-                    setIcon(ImageProvider.fromResource(context, com.yandex.maps.mobile.R.drawable.notification_action_background))
-                    setText("${dronePoints.size} Special place")
+                    isDraggable = true
+                    val vectorDrawable = ResourcesCompat.getDrawable(resources, R.drawable.pin, null) as VectorDrawable
+                    vectorDrawable.setTint(Color.BLUE)
+                    setIcon(ImageProvider.fromBitmap(vectorDrawable.toBitmap()))
+                    setText("${dronePoints.size}",
+                        TextStyle().apply {
+                            size = 10f
+                            placement = TextStyle.Placement.BOTTOM
+                            offset = 5f
+                    })
                 }
                 dronePoints.add(placemark)
                 Log.d("Map", "${dronePoints.size} ${dronePoints}")
@@ -87,6 +109,7 @@ class MapFragment : Fragment() {
             override fun onMapLongTap(map: com.yandex.mapkit.map.Map, point: Point) {
                 Log.d("Map", "Long tap")
             }
+
         }
         mapView.mapWindow.map.addInputListener(inputListener!!)
     }
