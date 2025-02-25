@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_stats" />
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.example.msdk_coords.MapFragment"
+        android:name="com.example.msdk_coords.presentation.ui.map.MapFragment"
         android:label="fragment_map"
         tools:layout="@layout/fragment_map" />
 </navigation>

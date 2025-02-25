@@ -1,27 +1,14 @@
-package com.example.msdk_coords
+package com.example.msdk_coords.presentation
 
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.msdk_coords.R
 import com.example.msdk_coords.databinding.ActivityMainBinding
-import com.yandex.mapkit.MapKitFactory
-import dji.common.error.DJIError
-import dji.common.error.DJISDKError
-import dji.sdk.base.BaseComponent
-import dji.sdk.base.BaseProduct
-import dji.sdk.products.Aircraft
-import dji.sdk.sdkmanager.DJISDKInitEvent
-import dji.sdk.sdkmanager.DJISDKManager
 
 class MainActivity : AppCompatActivity() {
     private var _viewBinding: ActivityMainBinding? = null

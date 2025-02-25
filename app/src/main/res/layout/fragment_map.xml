@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MapFragment">
+    tools:context=".presentation.ui.map.MapFragment">
 
     <com.yandex.mapkit.mapview.MapView
         android:id="@+id/mapview"
@@ -23,7 +23,46 @@
             app:backgroundTint="@color/fab_route_color_celector"
             app:tint="@color/fab_route_icon_selector"
             app:rippleColor="@color/blue_200"
-            android:src="@android:drawable/ic_menu_myplaces" />
+            android:src="@drawable/route" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingDeleteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/floatingActionButton"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:clickable="true"
+            android:src="@drawable/delete"
+            android:visibility="invisible"
+            app:backgroundTint="@color/fab_delete_color_selector"
+            app:rippleColor="@color/red_200"
+            app:tint="@color/fab_delete_icon_selector"
+            tools:visibility="visible" />
+
+        <com.example.msdk_coords.presentation.ui.AltPickerWidget
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:padding="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingSendButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:clickable="true"
+            android:src="@drawable/send"
+            app:backgroundTint="@color/white"
+            app:rippleColor="@color/blue_200"
+            app:tint="@color/fab_route_icon_selector"
+            />
     </com.yandex.mapkit.mapview.MapView>
 
 </FrameLayout>
