@@ -11,9 +11,11 @@ import dji.common.mission.waypoint.Waypoint
 import dji.common.mission.waypoint.WaypointMission
 import dji.common.mission.waypoint.WaypointMissionDownloadEvent
 import dji.common.mission.waypoint.WaypointMissionExecutionEvent
+import dji.common.mission.waypoint.WaypointMissionFinishedAction
 import dji.common.mission.waypoint.WaypointMissionFlightPathMode
 import dji.common.mission.waypoint.WaypointMissionHeadingMode
 import dji.common.mission.waypoint.WaypointMissionUploadEvent
+import dji.common.util.CommonCallbacks.CompletionCallback
 import dji.sdk.mission.MissionControl
 import dji.sdk.mission.waypoint.WaypointMissionOperatorListener
 
@@ -64,6 +66,9 @@ class MapViewModel : ViewModel() {
         }
         val mission = WaypointMission(WaypointMission.Builder().apply {
             waypointList(waypointList)
+            autoFlightSpeed(5f) // Скорость 5 м/с
+            maxFlightSpeed(10f)
+            finishedAction(WaypointMissionFinishedAction.GO_HOME)
             headingMode(WaypointMissionHeadingMode.USING_WAYPOINT_HEADING)
             flightPathMode(WaypointMissionFlightPathMode.NORMAL)
         })
@@ -89,6 +94,16 @@ class MapViewModel : ViewModel() {
                 Log.d("DJI", "Mission started")
             }
         })
-//        operator.startMission()
+        operator.uploadMission { error ->
+            if (error == null) {
+                Log.d("DJI", "Mission uploaded")
+                operator.startMission { startError ->
+                    Log.d("DJI", "Start result: $startError")
+                }
+            } else {
+                Log.e("DJI", "Upload error: ${error.description}")
+            }
+        }
+        operator.startMission { p0 -> Log.d("DJI", "Result: $p0") }
     }
 }
