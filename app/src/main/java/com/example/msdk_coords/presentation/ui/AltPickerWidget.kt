@@ -14,7 +14,8 @@ class AltPickerWidget @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : CardView(context, attrs, defStyleAttr) {
 
-    private var heightValue = 100 // Начальная высота
+    private var _altitude = 100.0f // Начальная высота
+    val altitude get() = _altitude
     private val btnDecrease: ImageButton
     private val btnIncrease: ImageButton
     private val tvHeight: TextView
@@ -36,24 +37,18 @@ class AltPickerWidget @JvmOverloads constructor(
     }
 
     private fun updateHeightDisplay() {
-        tvHeight.text = heightValue.toString()
+        tvHeight.text = _altitude.toString()
     }
 
     private fun increaseHeight() {
-        heightValue += 1
+        _altitude += 1
         updateHeightDisplay()
     }
 
     private fun decreaseHeight() {
-        if (heightValue > 0) { // Минимальное значение
-            heightValue -= 1
+        if (_altitude > 0) { // Минимальное значение
+            _altitude -= 1
             updateHeightDisplay()
         }
-    }
-
-    fun getHeightValue(): Int = heightValue
-    fun setHeightValue(value: Int) {
-        heightValue = value
-        updateHeightDisplay()
     }
 }

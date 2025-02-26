@@ -63,6 +63,7 @@ class MapFragment : Fragment() {
 
         binding.floatingActionButton.setOnClickListener { viewModel.toggleRouteCreationMode() }
         binding.floatingDeleteButton.setOnClickListener { removeSelectedPlacemark() }
+        binding.floatingSendButton.setOnClickListener {  }
 
         observeViewModel()
         return binding.root
@@ -94,9 +95,6 @@ class MapFragment : Fragment() {
             updateFabState(it)
         }
 
-        viewModel.mapPlacemarks.observe(viewLifecycleOwner) { placemarks ->
-        }
-
         viewModel.selectedPlacemark.observe(viewLifecycleOwner) { placemark ->
             binding.floatingDeleteButton.visibility =
                 if (placemark == null) View.INVISIBLE else View.VISIBLE
@@ -116,7 +114,7 @@ class MapFragment : Fragment() {
                 offset = 5f
             })
         }
-        viewModel.addPlacemark(placemark)
+        viewModel.addPlacemark(placemark, binding.altPicker.altitude)
         placemark.addTapListener { _, _ ->
             viewModel.selectPlacemark(placemark)
             true
