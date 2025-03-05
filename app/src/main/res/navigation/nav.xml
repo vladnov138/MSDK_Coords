@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/statsFragment"
-        android:name="com.example.msdk_coords.StatsFragment"
+        android:name="com.example.msdk_coords.presentation.StatsFragment"
         android:label="fragment_stats"
         tools:layout="@layout/fragment_stats" />
     <fragment

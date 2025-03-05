@@ -11,7 +11,7 @@ class MyApplication : Application() {
         MultiDex.install(this)
         try {
             // Явная загрузка Helper
-//            Helper.install(this)
+            Helper.install(this)
         } catch (e: Exception) {
             e.printStackTrace()
         }
