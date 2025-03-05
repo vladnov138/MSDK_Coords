@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.msdk_coords.utils.GraphConverter
 import com.yandex.mapkit.map.PlacemarkMapObject
 import dji.common.error.DJIError
 import dji.common.flightcontroller.FlightControllerState
@@ -13,7 +12,6 @@ import dji.common.mission.waypoint.Waypoint
 import dji.common.mission.waypoint.WaypointMission
 import dji.common.mission.waypoint.WaypointMissionDownloadEvent
 import dji.common.mission.waypoint.WaypointMissionExecutionEvent
-import dji.common.mission.waypoint.WaypointMissionFinishedAction
 import dji.common.mission.waypoint.WaypointMissionFlightPathMode
 import dji.common.mission.waypoint.WaypointMissionHeadingMode
 import dji.common.mission.waypoint.WaypointMissionUploadEvent
@@ -45,9 +43,6 @@ class MapViewModel : ViewModel() {
     private val _homePosition = MutableLiveData<LocationCoordinate2D>(null)
     val homePosition: LiveData<LocationCoordinate2D> = _homePosition
 
-    private val _isMissionStarting = MutableLiveData<Boolean>(false)
-    val isMissionStarting: LiveData<Boolean> = _isMissionStarting
-
     fun toggleRouteCreationMode() {
         _isRouteCreationMode.value = !_isRouteCreationMode.value!!
     }
@@ -76,9 +71,6 @@ class MapViewModel : ViewModel() {
     }
 
     fun startRoute() {
-        val graphConverter = GraphConverter()
-        val graph = graphConverter.buildGraph(droneWaypoints.value!!)
-
         val aircraft = DJISDKManager.getInstance().product as? Aircraft
         val flightController = aircraft?.flightController
         val lat = location.value?.latitude
@@ -86,7 +78,7 @@ class MapViewModel : ViewModel() {
         _homePosition.value = LocationCoordinate2D(lat!!, lon!!)
         flightController?.setHomeLocation(homePosition.value!!) { error ->
             if (error == null) {
-                Log.d("DJI", "Home Position set: ${homePosition.value}")
+                Log.d("DJI", "Home Position установлена вручную")
             } else {
                 Log.e("DJI", "Ошибка: ${error.description}")
             }
@@ -96,18 +88,12 @@ class MapViewModel : ViewModel() {
         val waypointList = waypoints.map {
             Waypoint(it.latitude, it.longitude, it.altitude)
         }
-        Log.d("DJI", "Waypoint list size: ${waypointList.size}")
         val mission = WaypointMission.Builder().apply {
             waypointList(waypointList)
             waypointCount(waypointList.size)
-            autoFlightSpeed(5f) // Скорость 5 м/с
-            maxFlightSpeed(10f)
-            finishedAction(WaypointMissionFinishedAction.GO_HOME)
             headingMode(WaypointMissionHeadingMode.AUTO)
             flightPathMode(WaypointMissionFlightPathMode.NORMAL)
         }.build()
-        Log.d("DJI", "Mission waypoint count: ${mission.waypointCount}")
-        Log.d("DJI", "Mission waypoint list size: ${mission.waypointList.size}")
         val operator = MissionControl.getInstance().waypointMissionOperator
         operator.addListener(object : WaypointMissionOperatorListener {
             override fun onDownloadUpdate(p0: WaypointMissionDownloadEvent) {
@@ -124,17 +110,15 @@ class MapViewModel : ViewModel() {
 
             override fun onExecutionStart() {
                 Log.d("DJI", "Execution start")
-                _isMissionStarting.postValue(true)
             }
 
             override fun onExecutionFinish(p0: DJIError?) {
                 Log.d("DJI", "Mission started")
-                _isMissionStarting.postValue(false)
             }
         })
         val err = operator.loadMission(mission)
         if (err != null) {
-            Log.e("DJI", "Load mission: $err")
+            Log.e("DJI", "$err")
         }
         operator.uploadMission { error ->
             if (error == null) {
@@ -159,17 +143,6 @@ class MapViewModel : ViewModel() {
                     _location.postValue(location)
                     _heading.postValue(state.attitude.yaw)
                 }
-            }
-        }
-    }
-
-    fun startRTH() {
-        val flightController = (DJISDKManager.getInstance().product as? Aircraft)?.flightController
-        flightController?.startGoHome { error ->
-            if (error == null) {
-                Log.d("DJI", "RTH Command send")
-            } else {
-                Log.e("DJI", "RTH error: ${error.description}")
             }
         }
     }
