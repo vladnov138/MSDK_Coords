@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.msdk_coords.graph_algorithms.AStarAlgo
+import com.example.msdk_coords.utils.GraphConverter
 import com.yandex.mapkit.map.PlacemarkMapObject
 import dji.common.error.DJIError
 import dji.common.flightcontroller.FlightControllerState
@@ -12,6 +14,7 @@ import dji.common.mission.waypoint.Waypoint
 import dji.common.mission.waypoint.WaypointMission
 import dji.common.mission.waypoint.WaypointMissionDownloadEvent
 import dji.common.mission.waypoint.WaypointMissionExecutionEvent
+import dji.common.mission.waypoint.WaypointMissionFinishedAction
 import dji.common.mission.waypoint.WaypointMissionFlightPathMode
 import dji.common.mission.waypoint.WaypointMissionHeadingMode
 import dji.common.mission.waypoint.WaypointMissionUploadEvent
@@ -85,14 +88,24 @@ class MapViewModel : ViewModel() {
         }
 
         val waypoints = _droneWaypoints.value ?: return
-        val waypointList = waypoints.map {
-            Waypoint(it.latitude, it.longitude, it.altitude)
+        val graph = GraphConverter().buildGraph(homePosition.value!!, droneWaypoints.value!!)
+        val (shortestWay, _) = AStarAlgo(graph).findPath()
+        val waypointList = mutableListOf<Waypoint>()
+        Log.d("Path", "${waypoints.size}, ${shortestWay}")
+        for (i in shortestWay) {
+            if (i != 0) {
+                val point = waypoints[i - 1]
+                waypointList.add(Waypoint(point.latitude, point.longitude, point.altitude))
+            }
         }
         val mission = WaypointMission.Builder().apply {
             waypointList(waypointList)
             waypointCount(waypointList.size)
+            autoFlightSpeed(10.0f)
+            maxFlightSpeed(15.0f)
             headingMode(WaypointMissionHeadingMode.AUTO)
             flightPathMode(WaypointMissionFlightPathMode.NORMAL)
+            finishedAction(WaypointMissionFinishedAction.GO_HOME)
         }.build()
         val operator = MissionControl.getInstance().waypointMissionOperator
         operator.addListener(object : WaypointMissionOperatorListener {
@@ -118,7 +131,7 @@ class MapViewModel : ViewModel() {
         })
         val err = operator.loadMission(mission)
         if (err != null) {
-            Log.e("DJI", "$err")
+            Log.e("DJI", "$err, ${err.description}")
         }
         operator.uploadMission { error ->
             if (error == null) {
@@ -145,5 +158,9 @@ class MapViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun startRTH() {
+
     }
 }

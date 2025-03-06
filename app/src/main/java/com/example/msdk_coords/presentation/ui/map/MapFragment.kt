@@ -159,15 +159,15 @@ class MapFragment : Fragment() {
             }
         }
 
-        viewModel.isMissionStarting.observe(viewLifecycleOwner) {
-            if (viewModel.isMissionStarting.value!!) {
-                binding.floatingSendButton.visibility = View.INVISIBLE
-                binding.floatingRTHButton.visibility = View.VISIBLE
-            } else {
-                binding.floatingSendButton.visibility = View.VISIBLE
-                binding.floatingRTHButton.visibility = View.INVISIBLE
-            }
-        }
+//        viewModel.isMissionStarting.observe(viewLifecycleOwner) {
+//            if (viewModel.isMissionStarting.value!!) {
+//                binding.floatingSendButton.visibility = View.INVISIBLE
+//                binding.floatingRTHButton.visibility = View.VISIBLE
+//            } else {
+//                binding.floatingSendButton.visibility = View.VISIBLE
+//                binding.floatingRTHButton.visibility = View.INVISIBLE
+//            }
+//        }
 
         viewModel.selectedPlacemark.observe(viewLifecycleOwner) { placemark ->
             binding.floatingDeleteButton.visibility =

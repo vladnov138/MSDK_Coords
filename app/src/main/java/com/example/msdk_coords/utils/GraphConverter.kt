@@ -1,6 +1,8 @@
 package com.example.msdk_coords.utils
 
+import android.util.Log
 import dji.common.flightcontroller.LocationCoordinate3D
+import dji.common.model.LocationCoordinate2D
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -28,11 +30,19 @@ class GraphConverter {
         return sqrt(horizontalDist.pow(2) + verticalDist.pow(2))
     }
 
-    fun buildGraph(waypoints: List<LocationCoordinate3D>): Array<DoubleArray> {
-        val graph = Array(waypoints.size) { DoubleArray(waypoints.size) }
-        for (i in waypoints.indices) {
-            for (j in i + 1 until waypoints.indices.last) {
-                val distance = calculate3dDistance(waypoints[i], waypoints[j])
+    fun buildGraph(homePosition: LocationCoordinate2D, waypoints: List<LocationCoordinate3D>): Array<DoubleArray> {
+        val graph = Array(waypoints.size + 1) { DoubleArray(waypoints.size + 1) } // + homePosition
+        val homePosition3d = LocationCoordinate3D(homePosition.latitude, homePosition.longitude, waypoints[0].altitude)
+        // Заполняем расстояния от home к всем точкам и обратно
+        for (j in 1 until graph.size) {
+            val distance = calculate3dDistance(homePosition3d, waypoints[j - 1])
+            graph[0][j] = distance
+            graph[j][0] = distance
+        }
+
+        for (i in 1 until graph.size) {
+            for (j in i + 1 until graph.size) {
+                val distance = calculate3dDistance(waypoints[i - 1], waypoints[j - 1])
                 graph[i][j] = distance
                 graph[j][i] = distance
             }

@@ -14,7 +14,7 @@ class AltPickerWidget @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : CardView(context, attrs, defStyleAttr) {
 
-    private var _altitude = 30.0f // Начальная высота
+    private var _altitude = 10.0f // Начальная высота
     val altitude get() = _altitude
     private val btnDecrease: ImageButton
     private val btnIncrease: ImageButton
