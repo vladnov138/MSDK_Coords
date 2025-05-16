@@ -40,7 +40,22 @@
             app:tint="@color/fab_delete_icon_selector"
             tools:visibility="visible" />
 
-        <com.example.msdk_coords.presentation.ui.AltPickerWidget
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingCreateZoneButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginTop="5dp"
+            android:layout_toEndOf="@+id/floatingActionButton"
+            android:clickable="true"
+            android:src="@drawable/create_zone_icon"
+            app:backgroundTint="@color/fab_createzone_selector"
+            app:rippleColor="@color/red_200"
+            app:tint="@color/fab_delete_icon_selector"
+            tools:visibility="visible" />
+
+        <com.example.msdk_ardupilot.presentation.ui.AltPickerWidget
             android:id="@+id/altPicker"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
@@ -65,13 +80,45 @@
             app:tint="@color/fab_route_icon_selector" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingRTHButton"
+            android:id="@+id/floatingPositionUAVButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginEnd="5dp"
             android:layout_marginBottom="75dp"
+            android:clickable="true"
+            android:src="@drawable/location"
+            android:visibility="visible"
+            app:backgroundTint="@color/white"
+            app:rippleColor="@color/blue_200"
+            app:tint="@color/fab_route_icon_selector"
+            tools:visibility="visible" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingCompassButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/floatingPositionUAVButton"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:clickable="true"
+            android:src="@drawable/compass"
+            android:visibility="visible"
+            app:backgroundTint="@color/white"
+            app:rippleColor="@color/blue_200"
+            app:tint="@color/fab_route_icon_selector"
+            tools:visibility="visible" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingRTHButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:layout_toStartOf="@+id/floatingSendButton"
             android:clickable="true"
             android:src="@drawable/home_position"
             android:visibility="invisible"

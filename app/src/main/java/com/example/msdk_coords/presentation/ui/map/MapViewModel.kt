@@ -1,4 +1,4 @@
-package com.example.msdk_coords.presentation.ui.map
+package com.example.msdk_ardupilot.presentation.ui.map
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -23,6 +23,10 @@ import dji.sdk.mission.MissionControl
 import dji.sdk.mission.waypoint.WaypointMissionOperatorListener
 import dji.sdk.products.Aircraft
 import dji.sdk.sdkmanager.DJISDKManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MapViewModel : ViewModel() {
     private val _isRouteCreationMode = MutableLiveData(false)
@@ -105,7 +109,7 @@ class MapViewModel : ViewModel() {
             maxFlightSpeed(15.0f)
             headingMode(WaypointMissionHeadingMode.AUTO)
             flightPathMode(WaypointMissionFlightPathMode.NORMAL)
-            finishedAction(WaypointMissionFinishedAction.GO_HOME)
+            finishedAction(WaypointMissionFinishedAction.AUTO_LAND)
         }.build()
         val operator = MissionControl.getInstance().waypointMissionOperator
         operator.addListener(object : WaypointMissionOperatorListener {
@@ -133,22 +137,31 @@ class MapViewModel : ViewModel() {
         if (err != null) {
             Log.e("DJI", "$err, ${err.description}")
         }
-        operator.uploadMission { error ->
-            if (error == null) {
-                Log.d("DJI", "Mission uploaded")
-                operator.startMission { startError ->
-                    Log.d("DJI", "Start result: $startError")
+        CoroutineScope(Dispatchers.IO).launch {
+//            DJISDKManager.getInstance().connector!!.commandManager.setGuidedMode()
+//            delay(300)
+//            aircraft?.flightController?.turnOnMotors(null)
+//            delay(500)
+//            aircraft?.flightController?.startTakeoff(null)
+//            delay(1000)
+            operator.uploadMission { error ->
+                if (error == null) {
+                    Log.d("DJI", "Mission uploaded")
+                    operator.startMission { startError ->
+                        Log.d("DJI", "Start result: $startError")
+                    }
+                } else {
+                    Log.e("DJI", "Upload error: ${error.description}")
                 }
-            } else {
-                Log.e("DJI", "Upload error: ${error.description}")
             }
+            delay(1000)
+//            operator.startMission { p0 -> Log.d("DJI", "Result: $p0") }
         }
-        operator.startMission { p0 -> Log.d("DJI", "Result: $p0") }
     }
 
     fun setupDroneLocationListener() {
         val aircraft = DJISDKManager.getInstance().product as? Aircraft
-        if (aircraft != null && aircraft.isConnected) {
+        if (aircraft != null && aircraft.isConnected()) {
             val flightController = aircraft.flightController
             flightController?.setStateCallback { state: FlightControllerState ->
                 val location = state.aircraftLocation

@@ -25,7 +25,6 @@ class StatsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentStatsBinding.inflate(inflater)
-
         DJISDKManager.getInstance().registerApp(requireContext().applicationContext, object : DJISDKManager.SDKManagerCallback {
             override fun onRegister(result: DJIError?) {
                 if (result == DJISDKError.REGISTRATION_SUCCESS) {
