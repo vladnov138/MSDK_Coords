@@ -1,4 +1,4 @@
-package com.example.msdk_ardupilot.presentation.ui
+package com.example.msdk_coords.presentation.ui
 
 import android.content.Context
 import android.util.AttributeSet

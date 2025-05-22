@@ -1,4 +1,4 @@
-package com.example.msdk_ardupilot.presentation.ui.map
+package com.example.msdk_coords.presentation.ui.map
 
 import android.util.Log
 import androidx.lifecycle.LiveData

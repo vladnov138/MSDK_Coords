@@ -9,8 +9,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.msdk_coords.BuildConfig
 import com.example.msdk_coords.R
 import com.example.msdk_coords.databinding.ActivityMainBinding
+import com.yandex.mapkit.MapKitFactory
 import dji.common.error.DJIError
 import dji.common.error.DJISDKError
 import dji.sdk.base.BaseComponent
@@ -40,6 +42,6 @@ class MainActivity : AppCompatActivity() {
         val navController = navHostFragment.navController
         bottomNavView.setupWithNavController(navController)
 
-
+        MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY)
     }
 }

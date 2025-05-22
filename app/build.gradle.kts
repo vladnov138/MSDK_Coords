@@ -1,4 +1,11 @@
-import org.jetbrains.kotlin.ir.backend.js.compile
+import java.util.Properties
+
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
+}
+val mapkitApiKey = localProperties.getProperty("MAPKIT_API_KEY", "")
 
 plugins {
     alias(libs.plugins.android.application)
@@ -47,10 +54,14 @@ android {
             // above, FFmpeg lib might lead to runtime crashes or warnings.
             abiFilters += setOf("armeabi-v7a", "arm64-v8a")
         }
+
+//        val mapkitApiKey: String by project.extra
+        buildConfigField("String", "MAPKIT_API_KEY", "\"${mapkitApiKey}\"")
     }
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     buildTypes {

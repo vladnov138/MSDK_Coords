@@ -55,7 +55,7 @@
             app:tint="@color/fab_delete_icon_selector"
             tools:visibility="visible" />
 
-        <com.example.msdk_ardupilot.presentation.ui.AltPickerWidget
+        <com.example.msdk_coords.presentation.ui.AltPickerWidget
             android:id="@+id/altPicker"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
