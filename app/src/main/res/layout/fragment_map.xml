@@ -127,6 +127,32 @@
             app:tint="@color/fab_route_icon_selector"
             tools:visibility="visible" />
 
+<!--        <Button-->
+<!--            android:id="@+id/loadCsvBtn"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_alignParentStart="true"-->
+<!--            android:layout_alignParentBottom="true"-->
+<!--            android:layout_marginStart="5dp"-->
+<!--            android:layout_marginBottom="5dp"-->
+<!--            android:text="Загрузить"-->
+<!--            android:textColor="@color/blue_500"-->
+<!--            app:backgroundTint="@color/white" />-->
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floatingLoadCsvBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="5dp"
+            android:clickable="true"
+            android:src="@drawable/load_file"
+            app:backgroundTint="@color/white"
+            app:rippleColor="@color/blue_200"
+            app:tint="@color/fab_route_icon_selector"
+            tools:visibility="visible" />
+
     </com.yandex.mapkit.mapview.MapView>
 
 </FrameLayout>

@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.example.msdk_coords.databinding.FragmentStatsBinding
+import dji.common.battery.BatteryState
+import dji.common.battery.BatteryState.Callback
 import dji.common.error.DJIError
 import dji.common.error.DJISDKError
 import dji.sdk.base.BaseComponent
@@ -15,7 +17,6 @@ import dji.sdk.base.BaseProduct
 import dji.sdk.products.Aircraft
 import dji.sdk.sdkmanager.DJISDKInitEvent
 import dji.sdk.sdkmanager.DJISDKManager
-
 class StatsFragment : Fragment() {
     private var _binding: FragmentStatsBinding? = null
     private val binding get() = _binding!!
@@ -65,6 +66,18 @@ class StatsFragment : Fragment() {
                     }
                     Log.d("DJI", "Latitude: $latitude, Longitude: $longitude, Altitude: $altitude")
                 }
+                aircraft?.getBattery()?.setStateCallback(object : Callback {
+                    override fun onUpdate(state: BatteryState?) {
+                        if (state != null) {
+                            val percent = state.chargeRemainingInPercent
+                            val volt = state.voltage / 1000f
+                            binding.root.post {
+                                binding.batteryTv.text = "$percent%"
+                                binding.batteryVoltTv.text = "$volt V"
+                            }
+                        }
+                    }
+                })
             }
 
             override fun onProductChanged(p0: BaseProduct?) {

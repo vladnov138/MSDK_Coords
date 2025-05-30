@@ -1,13 +1,18 @@
 package com.example.msdk_coords.presentation.ui.map
 
+import android.app.Activity
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.drawable.VectorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.ViewCompat
@@ -35,6 +40,7 @@ import com.yandex.mapkit.offline_cache.RegionState
 import com.yandex.runtime.image.ImageProvider
 import dji.common.flightcontroller.LocationCoordinate3D
 import dji.common.model.LocationCoordinate2D
+import dji.midware.WaypointMissionCsvParser
 
 class MapFragment : Fragment() {
     private var _binding: FragmentMapBinding? = null
@@ -65,9 +71,34 @@ class MapFragment : Fragment() {
     private var _vectorCornerZoneDrawable: VectorDrawable? = null
     private val vectorCornerZoneDrawable get() = _vectorCornerZoneDrawable!!
 
+    private lateinit var csvFilePicker: ActivityResultLauncher<Intent>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapKitFactory.initialize(context)
+        csvFilePicker = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val uri = result.data?.data
+                uri?.let { handleCsvFile(it) }
+            }
+        }
+    }
+
+    private fun handleCsvFile(uri: Uri) {
+        try {
+            requireContext().contentResolver.openInputStream(uri)?.bufferedReader().use { reader ->
+                if (reader != null) {
+                    val mission = WaypointMissionCsvParser.parseCsvToMission(reader)
+                    Log.d("CSV", "${mission?.waypointCount} points")
+                    for (waypoint in mission!!.waypointList) {
+                        val point = Point(waypoint.coordinate.latitude, waypoint.coordinate.longitude)
+                        addPlacemark(point)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("CSV", "Reading error: $e")
+        }
     }
 
     override fun onCreateView(
@@ -140,6 +171,13 @@ class MapFragment : Fragment() {
         binding.floatingCreateZoneButton.setOnClickListener { createRestrictZone() }
         binding.floatingCompassButton.setOnClickListener { compassHandler() }
         binding.floatingPositionUAVButton.setOnClickListener { holdCameraOnUAV() }
+        binding.floatingLoadCsvBtn.setOnClickListener {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE)
+                type = "text/*"
+            }
+            csvFilePicker.launch(intent)
+        }
 
         viewModel.setupDroneLocationListener()
         observeViewModel()

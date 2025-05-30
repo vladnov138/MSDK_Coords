@@ -1,6 +1,9 @@
 package com.example.msdk_coords.presentation.ui.map
 
+import android.content.Intent
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -92,15 +95,18 @@ class MapViewModel : ViewModel() {
         }
 
         val waypoints = _droneWaypoints.value ?: return
-        val graph = GraphConverter().buildGraph(homePosition.value!!, droneWaypoints.value!!)
-        val (shortestWay, _) = AStarAlgo(graph).findPath()
+//        val graph = GraphConverter().buildGraph(homePosition.value!!, droneWaypoints.value!!)
+//        val (shortestWay, _) = AStarAlgo(graph).findPath()
         val waypointList = mutableListOf<Waypoint>()
-        Log.d("Path", "${waypoints.size}, ${shortestWay}")
-        for (i in shortestWay) {
-            if (i != 0) {
-                val point = waypoints[i - 1]
-                waypointList.add(Waypoint(point.latitude, point.longitude, point.altitude))
-            }
+//        Log.d("Path", "${waypoints.size}, ${shortestWay}")
+//        for (i in shortestWay) {
+//            if (i != 0) {
+//                val point = waypoints[i - 1]
+//                waypointList.add(Waypoint(point.latitude, point.longitude, point.altitude))
+//            }
+//        }
+        for (point in waypoints) {
+            waypointList.add(Waypoint(point.latitude, point.longitude, point.altitude))
         }
         val mission = WaypointMission.Builder().apply {
             waypointList(waypointList)
@@ -108,8 +114,8 @@ class MapViewModel : ViewModel() {
             autoFlightSpeed(10.0f)
             maxFlightSpeed(15.0f)
             headingMode(WaypointMissionHeadingMode.AUTO)
-            flightPathMode(WaypointMissionFlightPathMode.NORMAL)
-            finishedAction(WaypointMissionFinishedAction.AUTO_LAND)
+            flightPathMode(WaypointMissionFlightPathMode.CURVED)
+            finishedAction(WaypointMissionFinishedAction.GO_HOME)
         }.build()
         val operator = MissionControl.getInstance().waypointMissionOperator
         operator.addListener(object : WaypointMissionOperatorListener {
@@ -138,12 +144,6 @@ class MapViewModel : ViewModel() {
             Log.e("DJI", "$err, ${err.description}")
         }
         CoroutineScope(Dispatchers.IO).launch {
-//            DJISDKManager.getInstance().connector!!.commandManager.setGuidedMode()
-//            delay(300)
-//            aircraft?.flightController?.turnOnMotors(null)
-//            delay(500)
-//            aircraft?.flightController?.startTakeoff(null)
-//            delay(1000)
             operator.uploadMission { error ->
                 if (error == null) {
                     Log.d("DJI", "Mission uploaded")
@@ -155,7 +155,6 @@ class MapViewModel : ViewModel() {
                 }
             }
             delay(1000)
-//            operator.startMission { p0 -> Log.d("DJI", "Result: $p0") }
         }
     }
 
@@ -176,4 +175,6 @@ class MapViewModel : ViewModel() {
     fun startRTH() {
 
     }
+
+
 }
