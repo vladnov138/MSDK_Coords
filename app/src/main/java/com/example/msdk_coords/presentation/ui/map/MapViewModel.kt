@@ -108,6 +108,10 @@ class MapViewModel : ViewModel() {
         for (point in waypoints) {
             waypointList.add(Waypoint(point.latitude, point.longitude, point.altitude))
         }
+        Log.d("Mode", "Mission started")
+        aircraft?.flightController?.setStateCallback { state ->
+            Log.d("Mode", "${state.flightMode}")
+        }
         val mission = WaypointMission.Builder().apply {
             waypointList(waypointList)
             waypointCount(waypointList.size)

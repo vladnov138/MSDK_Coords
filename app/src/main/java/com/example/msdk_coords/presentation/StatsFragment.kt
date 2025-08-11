@@ -12,6 +12,7 @@ import dji.common.battery.BatteryState
 import dji.common.battery.BatteryState.Callback
 import dji.common.error.DJIError
 import dji.common.error.DJISDKError
+import dji.common.flightcontroller.FlightMode
 import dji.sdk.base.BaseComponent
 import dji.sdk.base.BaseProduct
 import dji.sdk.products.Aircraft
@@ -64,6 +65,7 @@ class StatsFragment : Fragment() {
                         binding.lonTv.text = "${longitude}"
                         binding.altTv.text = "${altitude}"
                     }
+                    Log.d("Mode", "${state.flightMode}")
                     Log.d("DJI", "Latitude: $latitude, Longitude: $longitude, Altitude: $altitude")
                 }
                 aircraft?.getBattery()?.setStateCallback(object : Callback {
